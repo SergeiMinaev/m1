@@ -110,8 +110,7 @@ def apply():
 				print(f'\n>>> This query will be executed:\n{q}')
 				if input('\n>>> Apply? ').lower() == 'y':
 					q = q.replace('\n', ' ')
-					cmd = f"{BASE_CMD} '{q}'"
-					print('CMD:', cmd)
+					cmd = f'''{BASE_CMD} "{q}"'''
 					exec_cmd(cmd)
 					update_last_applied(n)
 					print('>>> Applied successfully.\n')
