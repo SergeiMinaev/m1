@@ -128,12 +128,19 @@ def tables_list():
 
 
 def dump_schema():
+	if not os.path.exists(conf.SCHEMA_DIR):
+		print('Error: schema dir', conf.SCHEMA_DIR, 'does not exists.')
+		sys.exit()
+	elif not os.path.isdir(conf.SCHEMA_DIR):
+		print('Error:', conf.SCHEMA_DIR, 'is not a directory.')
+		sys.exit()
+
 	cmd = f'pg_dump --schema-only -U {conf.USER} {conf.DBNAME}'
 	r = exec_cmd(cmd)
-	open(f'schema/schema.sql', 'w').write(r.stdout.decode())
+	open(f'{conf.SCHEMA_DIR}/schema.sql', 'w').write(r.stdout.decode())
 
 	for table in tables_list():
-		print(f'Saving schema of {table} to schema/{table}.sql')
+		print(f'Saving schema of {table} to {conf.SCHEMA_DIR}/{table}.sql')
 		cmd = f'pg_dump --schema-only -U {conf.USER} {conf.DBNAME} -t {table} -O'
 		r = exec_cmd(cmd)
 		s = r.stdout.decode()
@@ -147,7 +154,7 @@ def dump_schema():
 				fin += line + '\n'
 		fin = re.sub(r'\n\n+', '\n\n', fin)
 		fin = re.sub(r'^\n+', '', fin)
-		open(f'schema/{table}.sql', 'w').write(fin)
+		open(f'{conf.SCHEMA_DIR}/{table}.sql', 'w').write(fin)
 
 def run():
 	check_last_applied()
